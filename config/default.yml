@@ -1,0 +1,7 @@
+Sqlfluff/Heredoc:
+  Description: 'Apply sqlfluff rules to Heredoc literals'
+  Enabled: pending
+  VersionAdded: '0.1.0'
+  StringIds:
+    - SQL
+  Dialect: postgresql

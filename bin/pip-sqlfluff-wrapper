@@ -1,0 +1,11 @@
+#!/bin/bash -euo pipefail
+
+python="${PYTHON:-python3.9}"
+env="${ENV:-env}"
+requirements="${REQUIREMENTS:-requirements.txt}"
+
+"$python" -m venv "$env"
+. "${env}/bin/activate"
+pip install -r "$requirements" > /dev/null
+
+exec sqlfluff $@
