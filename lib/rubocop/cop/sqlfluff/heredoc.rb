@@ -10,9 +10,12 @@ module RuboCop
         extend AutoCorrector
 
         MSG = 'sqlfluff: lint failure'
+        DEFAULT_STRING_IDS = %w[SQL]
+        DEFAULT_DIALECT = 'ansi'
+        DEFAULT_CONFIG_FILE = '.sqlfluff'
 
         def matching_id_heredoc?(node)
-          cop_config.fetch('StringIds').any? do |string_id|
+          cop_config.fetch('StringIds', DEFAULT_STRING_IDS).any? do |string_id|
             node.location.expression.source.end_with?(string_id)
           end
         end
@@ -45,7 +48,9 @@ module RuboCop
             sqlfluff_executable,
             'lint',
             '--dialect',
-            cop_config.fetch('Dialect'),
+            cop_config.fetch('Dialect', DEFAULT_DIALECT),
+            '--config',
+            cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
             '-',
             stdin_data: sql
           )
@@ -59,7 +64,9 @@ module RuboCop
             sqlfluff_executable,
             'fix',
             '--dialect',
-            cop_config.fetch('Dialect'),
+            cop_config.fetch('Dialect', DEFAULT_DIALECT),
+            '--config',
+            cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
             '-',
             stdin_data: sql
           )
@@ -76,9 +83,7 @@ module RuboCop
         end
 
         def indent(str, to:)
-          str.split("\n", -1).map { |line| (" " * to) + line }.join("\n").tap do |after|
-            puts "BEFORE:\n#{str}\nAFTER:\n#{after}"
-          end
+          str.split("\n", -1).map { |line| (" " * to) + line }.join("\n")
         end
       end
     end

@@ -5,3 +5,4 @@ Sqlfluff/Heredoc:
   StringIds:
     - SQL
   Dialect: postgresql
+  ConfigFile: '.sqlfluff'
