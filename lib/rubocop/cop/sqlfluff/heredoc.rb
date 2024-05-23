@@ -45,7 +45,7 @@ module RuboCop
         # @return [Boolean, String]
         def sqlfluff_lint(sql)
           out, _err, status = Open3.capture3(
-            sqlfluff_executable,
+            'sqlfluff',
             'lint',
             '--dialect',
             cop_config.fetch('Dialect', DEFAULT_DIALECT),
@@ -61,7 +61,7 @@ module RuboCop
         # @return [String]
         def sqlfluff_fix(sql)
           out, _err, status = Open3.capture3(
-            sqlfluff_executable,
+            'sqlfluff',
             'fix',
             '--dialect',
             cop_config.fetch('Dialect', DEFAULT_DIALECT),
@@ -76,10 +76,6 @@ module RuboCop
           else
             sql
           end
-        end
-
-        def sqlfluff_executable
-          File.expand_path('../../../../../bin/pip-sqlfluff-wrapper', __FILE__)
         end
 
         def indent(str, to:)
