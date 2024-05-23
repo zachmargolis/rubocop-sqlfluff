@@ -15,10 +15,10 @@ jobs:
     steps:
       - checkout
       - python/install-packages:
-          pkg-manager: pip
+          pkg-manager: pip3
       - python/install-packages:
           pip-dependency-file: requirements.txt
-          pkg-manager: pip
+          pkg-manager: pip3
       - ruby/install-deps
       - ruby/rspec-test:
           include: spec/**/*_spec.rb
