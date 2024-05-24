@@ -33,6 +33,9 @@ jobs:
       - ruby/install-deps
       - ruby/rspec-test:
           include: spec/**/*_spec.rb
+      - ruby/rubocop-check:
+          format: progress
+          label: Inspecting with Rubocop
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
