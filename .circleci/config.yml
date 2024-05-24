@@ -9,14 +9,15 @@ orbs:
 jobs:
   test:
     docker:
-      - image: cimg/base:current
+      # - image: cimg/base:current
       - image: cimg/python:3.12.3
-      - image: cimg/ruby:3.3.1
+      # - image: cimg/ruby:3.3.1
     steps:
       - checkout
       - python/install-packages:
           pip-dependency-file: requirements.txt
           pkg-manager: pip
+          venv-path: env
       - ruby/install-deps
       - ruby/rspec-test:
           include: spec/**/*_spec.rb
