@@ -14,7 +14,6 @@ jobs:
       - python/install-packages:
           pip-dependency-file: requirements.txt
           pkg-manager: pip
-      # - run: "find /home/circleci -type f | grep sqlfluff"
       - persist_to_workspace:
           root: /home/circleci
           paths:
@@ -25,6 +24,8 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
+      - attach_workspace:
+          at: /home/circleci
       - ruby/install-deps
       - ruby/rspec-test:
           include: spec/**/*_spec.rb
