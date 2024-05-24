@@ -35,12 +35,7 @@ module RuboCop
           add_offense(node, message: "#{MSG} #{format_errors(errors)}") do |corrector|
             corrector.replace(
               node.location.heredoc_body,
-              sqlfluff_fix(sql)
-              # Need to figure out how to replace with indentation!
-              # indent(
-              #   str,
-              #   to: config.for_cop('Layout/IndentationWidth').fetch('Width', 2),
-              # ),
+              sqlfluff_fix(sql),
             )
           end
         end
@@ -63,7 +58,7 @@ module RuboCop
           errors = sqlfluff.lint(
             sql: dedent(template_in(sql)).first,
             dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
-            config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)
+            config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
           )
 
           # rubocop:disable Style/ZeroLengthPredicate
@@ -81,10 +76,10 @@ module RuboCop
               sqlfluff.fix(
                 sql: template_in(dedented),
                 dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
-                config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)
+                config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
               ),
             ),
-            to: indent_amount
+            to: indent_amount,
           ).gsub(/ +\Z/, '')
         end
 
@@ -116,7 +111,7 @@ module RuboCop
         def format_errors(errors)
           errors.map do |error|
             "(#{error['code']}) Line #{error['start_line_no']} #{error['description']}".chomp('.')
-          end.join(", ")
+          end.join(', ')
         end
       end
     end

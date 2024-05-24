@@ -211,11 +211,19 @@ Style/SuperWithArgsParentheses:
   Enabled: true
 Style/SwapValues:
   Enabled: true
+Style/TrailingCommaInArguments:
+  Enabled: true
+  EnforcedStyleForMultiline: consistent_comma
+Style/TrailingCommaInHashLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: consistent_comma
 Style/YAMLFileRead:
   Enabled: true
 Style/SendWithLiteralMethodName:
   Enabled: true
 Style/SuperArguments:
   Enabled: true
+Style/FormatStringToken:
+  Enabled: false
 RSpec/ExampleLength:
   Max: 20

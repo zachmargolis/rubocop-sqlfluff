@@ -6,14 +6,14 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     {
       'Sqlfluff/Heredoc' => {
         'StringIds' => string_ids,
-        'Dialect' => 'ansi'
+        'Dialect' => 'ansi',
       },
       'Layout/HeredocIndentation' => {
         'Enabled' => true,
       },
       'Layout/ClosingHeredocIndentation' => {
         'Enabled' => true,
-      }
+      },
     }
   end
   let(:string_ids) { ['SQL'] }
