@@ -52,6 +52,20 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     RUBY
   end
 
+  it 'handles indentation when spaces are removed' do
+    expect_no_offenses(<<~RUBY)
+      ActiveRecord::Base.connection.execute(<<~SQL)
+        SELECT 1
+        FROM mytable
+
+        UNION ALL
+
+        SELECT 2
+        FROM othertable
+      SQL
+    RUBY
+  end
+
   it 'registers an offense SQL inside one-line heredocs that break sqlfluff rules' do
     expect_offense(<<~RUBY)
       ActiveRecord::Base.connection.execute(<<~SQL)
