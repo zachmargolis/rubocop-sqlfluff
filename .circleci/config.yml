@@ -32,6 +32,7 @@ jobs:
 workflows:
   test-workflow:
     jobs:
+      - install_python
       - test:
           requires:
             - install_python
