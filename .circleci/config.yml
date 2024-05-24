@@ -14,7 +14,7 @@ jobs:
       - python/install-packages:
           pip-dependency-file: requirements.txt
           pkg-manager: pip
-      - run: "ls .local/lib"
+      - run: "find . -type f | grep sqlfluff"
       - persist_to_workspace:
           root: .local
           paths:
