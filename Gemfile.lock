@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     rubocop-sqlfluff (0.1.0)
+      pycall (>= 1.5.2)
       rubocop
 
 GEM
@@ -24,6 +25,7 @@ GEM
     pry-byebug (3.10.1)
       byebug (~> 11.0)
       pry (>= 0.13, < 0.15)
+    pycall (1.5.2)
     racc (1.8.0)
     rainbow (3.1.1)
     rake (13.2.1)

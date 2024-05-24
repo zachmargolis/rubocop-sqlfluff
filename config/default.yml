@@ -6,3 +6,4 @@ Sqlfluff/Heredoc:
     - SQL
   Dialect: postgresql
   ConfigFile: '.sqlfluff'
+  VirtualEnvPath: 'env'

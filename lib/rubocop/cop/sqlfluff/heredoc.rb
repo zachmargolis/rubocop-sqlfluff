@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'open3'
+require 'pycall'
 
 module RuboCop
   module Cop
@@ -13,6 +13,7 @@ module RuboCop
         DEFAULT_STRING_IDS = %w[SQL]
         DEFAULT_DIALECT = 'ansi'
         DEFAULT_CONFIG_FILE = '.sqlfluff'
+        DEFAULT_VIRTUALENV = 'env'
 
         def matching_id_heredoc?(node)
           cop_config.fetch('StringIds', DEFAULT_STRING_IDS).any? do |string_id|
@@ -25,7 +26,7 @@ module RuboCop
 
           sql = node.location.heredoc_body.source
 
-          passed, errors = sqlfluff_lint(sql)
+          passed, _errors = sqlfluff_lint(sql)
 
           return if passed
 
@@ -42,40 +43,37 @@ module RuboCop
           end
         end
 
-        # @return [Boolean, String]
+        def sqlfluff
+          @sqlfluff ||= begin
+            sys = PyCall.import_module('sys')
+            env_path = cop_config.fetch('VirtualEnvPath', DEFAULT_VIRTUALENV)
+
+            Dir["#{env_path}/**/site-packages"].each do |packages_path|
+              sys.path.append(packages_path)
+            end
+
+            PyCall.import_module('sqlfluff')
+          end
+        end
+
+        # @return [Boolean, Array<Hash>]
         def sqlfluff_lint(sql)
-          out, _err, status = Open3.capture3(
-            'sqlfluff',
-            'lint',
-            '--dialect',
-            cop_config.fetch('Dialect', DEFAULT_DIALECT),
-            '--config',
-            cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
-            '-',
-            stdin_data: sql
+          errors = sqlfluff.lint(
+            sql:,
+            dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
+            config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
           )
 
-          [status.success?, out]
+          [errors.length == 0, errors]
         end
 
         # @return [String]
         def sqlfluff_fix(sql)
-          out, _err, status = Open3.capture3(
-            'sqlfluff',
-            'fix',
-            '--dialect',
-            cop_config.fetch('Dialect', DEFAULT_DIALECT),
-            '--config',
-            cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
-            '-',
-            stdin_data: sql
+          sqlfluff.fix(
+            sql:,
+            dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
+            config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
           )
-
-          if status.success?
-            out
-          else
-            sql
-          end
         end
 
         def indent(str, to:)
