@@ -95,9 +95,9 @@ module RuboCop
 
         # @return [String, Integer] (dedented string, number of spaces removed)
         def dedent(str)
-          indent_amount = str.lines.
-            reject { |line| line.chomp.empty? }.
-            map { |line| line.size - line.lstrip.size }.min
+          indent_amount = str.lines
+                             .reject { |line| line.chomp.empty? }
+                             .map { |line| line.size - line.lstrip.size }.min
           dedented = str.lines.map do |line|
             line[indent_amount..]
           end.join
