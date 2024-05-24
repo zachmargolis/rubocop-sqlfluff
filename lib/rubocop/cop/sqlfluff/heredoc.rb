@@ -46,7 +46,7 @@ module RuboCop
         def sqlfluff
           @sqlfluff ||= begin
             sys = PyCall.import_module('sys')
-            env_path = cop_config.fetch('VirtualEnvPath', DEFAULT_VIRTUALENV)
+            env_path = ENV.fetch('VENV_PATH', cop_config.fetch('VirtualEnvPath', DEFAULT_VIRTUALENV))
 
             Dir["#{env_path}/**/site-packages"].each do |packages_path|
               sys.path.append(packages_path)

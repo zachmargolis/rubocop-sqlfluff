@@ -14,13 +14,3 @@ RSpec.configure do |config|
   config.order = :random
   Kernel.srand config.seed
 end
-
-sqlfluff_bin_available = system('which', 'sqlfluff')
-if !sqlfluff_bin_available
-  abort <<~STR
-    sqlfluff not in the executable path!
-    Maybe you need to run:
-      . env/bin/activate
-      pip install -r requirements.txt
-  STR
-end
