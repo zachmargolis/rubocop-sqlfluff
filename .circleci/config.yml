@@ -20,7 +20,8 @@ jobs:
           paths:
             - /tmp/cci_pycache
   test:
-    requires: install_python
+    requires:
+      - install_python
     executor: ruby/default
     steps:
       - checkout
