@@ -16,9 +16,9 @@ jobs:
           pkg-manager: pip
       - run: "ls /tmp/cci_pycache"
       - persist_to_workspace:
-          root: workspace
+          root: /tmp
           paths:
-            - /tmp/cci_pycache
+            - cci_pycache
   test:
     executor: ruby/default
     steps:
