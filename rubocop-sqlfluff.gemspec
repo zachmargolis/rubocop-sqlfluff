@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
-require_relative "lib/rubocop/sqlfluff/version"
+require_relative 'lib/rubocop/sqlfluff/version'
 
 Gem::Specification.new do |spec|
-  spec.name = "rubocop-sqlfluff"
+  spec.name = 'rubocop-sqlfluff'
   spec.version = RuboCop::Sqlfluff::VERSION
-  spec.authors = ["Zach Margolis"]
-  spec.email = ["zachary.margolis@gsa.gov"]
+  spec.authors = ['Zach Margolis']
+  spec.email = ['zachary.margolis@gsa.gov']
 
-  spec.summary = "sqlfluff Rubocop extension"
-  spec.description = "Run sqlfluff linting via Rubocop"
-  # spec.homepage = "TODO: Put your gem's website or public repo URL here."
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.summary = 'sqlfluff Rubocop extension'
+  spec.description = 'Run sqlfluff linting via Rubocop'
 
-  spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
+  spec.required_ruby_version = '>= 3.1'
+
+  spec.metadata['allowed_push_host'] = "TODO: Set to your gem server 'https://example.com'"
 
   # spec.metadata["homepage_uri"] = spec.homepage
   # spec.metadata["source_code_uri"] = "TODO: Put your gem's public repo URL here."
@@ -26,15 +26,11 @@ Gem::Specification.new do |spec|
       (f == __FILE__) || f.match(%r{\A(?:(?:bin|test|spec|features)/|\.(?:git|circleci)|appveyor)})
     end
   end
-  spec.bindir = "exe"
+  spec.bindir = 'exe'
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  spec.require_paths = ['lib']
 
-  spec.add_dependency "pycall", ">= 1.5.2"
-
-  # For more information and examples about making a new gem, check out our
-  # guide at: https://bundler.io/guides/creating_gem.html
-
+  spec.add_dependency 'pycall', '>= 1.5.2'
   spec.add_runtime_dependency 'rubocop'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end
-

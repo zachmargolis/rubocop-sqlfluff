@@ -5,12 +5,14 @@ require 'pycall'
 module RuboCop
   module Cop
     module Sqlfluff
+      # Lint cop that checks for SQL queries inside of heredoc blocks
+      # and lints them with python sqlfluff
       class Heredoc < Base
         include RuboCop::Cop::Heredoc
         extend AutoCorrector
 
         MSG = 'sqlfluff: lint failure'
-        DEFAULT_STRING_IDS = %w[SQL]
+        DEFAULT_STRING_IDS = %w[SQL].freeze
         DEFAULT_DIALECT = 'ansi'
         DEFAULT_CONFIG_FILE = '.sqlfluff'
         DEFAULT_VIRTUALENV = 'env'
@@ -33,7 +35,7 @@ module RuboCop
           add_offense(node, message: MSG) do |corrector|
             corrector.replace(
               node.location.heredoc_body,
-              sqlfluff_fix(sql),
+              sqlfluff_fix(sql)
               # Need to figure out how to replace with indentation!
               # indent(
               #   str,
@@ -61,10 +63,13 @@ module RuboCop
           errors = sqlfluff.lint(
             sql:,
             dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
-            config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
+            config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)
           )
 
-          [errors.length == 0, errors]
+          # rubocop:disable Style/ZeroLengthPredicate
+          # errors is a PyCall::List, not a native Ruby array
+          [errors.length.zero?, errors]
+          # rubocop:enable Style/ZeroLengthPredicate
         end
 
         # @return [String]
@@ -72,12 +77,12 @@ module RuboCop
           sqlfluff.fix(
             sql:,
             dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
-            config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
+            config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)
           )
         end
 
         def indent(str, to:)
-          str.split("\n", -1).map { |line| (" " * to) + line }.join("\n")
+          str.split("\n", -1).map { |line| (' ' * to) + line }.join("\n")
         end
       end
     end

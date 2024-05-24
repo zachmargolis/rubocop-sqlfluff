@@ -6,8 +6,8 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     {
       'Sqlfluff/Heredoc' => {
         'StringIds' => string_ids,
-        'Dialect' => 'ansi',
-      },
+        'Dialect' => 'ansi'
+      }
     }
   end
   let(:string_ids) { ['SQL'] }
@@ -44,7 +44,7 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     RUBY
   end
 
-  context 'custom StringIds' do
+  context 'with custom StringIds' do
     let(:string_ids) { ['QUERY'] }
 
     it 'registers offenses in those heredoc tags' do
@@ -69,7 +69,7 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     RUBY
   end
 
-  context 'custom config file' do
+  context 'with a custom config file' do
     around do |ex|
       Tempfile.create('.sqlfluff') do |temp|
         File.open(temp.path, 'w') do |file|
@@ -117,12 +117,12 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     end
   end
 
-  context 'indentation width' do
+  context 'with an indentation width' do
     let(:config_values) do
       super().merge(
         'Layout/IndentationWidth' => {
-          'Width' => 4,
-        },
+          'Width' => 4
+        }
       )
     end
 
@@ -135,9 +135,9 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
       RUBY
 
       expect_correction(<<~RUBY)
-          ActiveRecord::Base.connection.execute(<<~SQL)
-              SELECT 1
-          SQL
+        ActiveRecord::Base.connection.execute(<<~SQL)
+            SELECT 1
+        SQL
       RUBY
     end
   end
