@@ -44,6 +44,56 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     RUBY
   end
 
+  context 'with templated variables' do
+    around do |ex|
+      config = <<~CONFIG
+        [sqlfluff]
+        templater = python
+
+        [sqlfluff:rules:capitalisation.keywords]
+        capitalisation_policy = upper
+
+        [sqlfluff:templater:python:context]
+        table = "AAA_my_table"
+        from = "2023-01-01"
+        to = "2024-01-01"
+      CONFIG
+
+      with_config_file(config) do
+        ex.run
+      end
+    end
+
+    it 'handles %{...} template in queries' do
+      expect_no_offenses(<<~RUBY)
+        ActiveRecord::Base.connection.execute(<<~SQL)
+        SELECT 1
+        FROM %{table}
+        WHERE created_at BETWEEN %{from} AND %{to}
+        SQL
+      RUBY
+    end
+
+    it 'corrects %{...} template in queries' do
+      expect_offense(<<~RUBY)
+        ActiveRecord::Base.connection.execute(<<~SQL)
+                                              ^^^^^^ sqlfluff: lint failure
+        select 1
+        from %{table}
+        where created_at between %{from} and %{to}
+        SQL
+      RUBY
+
+      expect_correction(<<~RUBY)
+        ActiveRecord::Base.connection.execute(<<~SQL)
+        SELECT 1
+        FROM %{table}
+        WHERE created_at BETWEEN %{from} AND %{to}
+        SQL
+      RUBY
+    end
+  end
+
   context 'with custom StringIds' do
     let(:string_ids) { ['QUERY'] }
 
@@ -71,26 +121,22 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
 
   context 'with a custom config file' do
     around do |ex|
-      Tempfile.create('.sqlfluff') do |temp|
-        File.open(temp.path, 'w') do |file|
-          file.puts <<~CONFIG
-            [sqlfluff]
-            exclude_rules = layout.end_of_file
+      config = <<~CONFIG
+        [sqlfluff]
+        exclude_rules = layout.end_of_file
 
-            [sqlfluff:indentation]
-            tab_space_size = 2
+        [sqlfluff:indentation]
+        tab_space_size = 2
 
-            [sqlfluff:layout:type:comma]
-            line_position = leading
-            spacing_before = touch
+        [sqlfluff:layout:type:comma]
+        line_position = leading
+        spacing_before = touch
 
-            [sqlfluff:rules:capitalisation.keywords]
-            capitalisation_policy = lower
-          CONFIG
-        end
+        [sqlfluff:rules:capitalisation.keywords]
+        capitalisation_policy = lower
+      CONFIG
 
-        config_values['Sqlfluff/Heredoc']['ConfigFile'] = temp.path
-
+      with_config_file(config) do
         ex.run
       end
     end
@@ -139,6 +185,20 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
             SELECT 1
         SQL
       RUBY
+    end
+  end
+
+  # Use inside an around block
+  # @yieldparam ex
+  def with_config_file(str)
+    Tempfile.create('.sqlfluff') do |temp|
+      File.open(temp.path, 'w') do |file|
+        file.puts(str)
+      end
+
+      config_values['Sqlfluff/Heredoc']['ConfigFile'] = temp.path
+
+      yield
     end
   end
 end

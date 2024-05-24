@@ -4,6 +4,6 @@ Sqlfluff/Heredoc:
   VersionAdded: '0.1.0'
   StringIds:
     - SQL
-  Dialect: postgresql
+  Dialect: postgres
   ConfigFile: '.sqlfluff'
   VirtualEnvPath: 'env'

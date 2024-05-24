@@ -61,7 +61,7 @@ module RuboCop
         # @return [Boolean, Array<Hash>]
         def sqlfluff_lint(sql)
           errors = sqlfluff.lint(
-            sql:,
+            sql: template_in(sql),
             dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
             config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)
           )
@@ -74,11 +74,23 @@ module RuboCop
 
         # @return [String]
         def sqlfluff_fix(sql)
-          sqlfluff.fix(
-            sql:,
-            dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
-            config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)
+          template_out(
+            sqlfluff.fix(
+              sql: template_in(sql),
+              dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
+              config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)
+            ),
           )
+        end
+
+        # Converts %{} to {}
+        def template_in(sql)
+          sql.gsub(/%\{([^\}]+)\}/, '{\1}')
+        end
+
+        # Converts {} back to %{}
+        def template_out(sql)
+          sql.gsub(/\{([^\}]+)\}/, '%{\1}')
         end
 
         def indent(str, to:)
