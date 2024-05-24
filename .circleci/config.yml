@@ -7,16 +7,23 @@ orbs:
   ruby: circleci/ruby@2.1.2
 
 jobs:
-  test:
-    docker:
-      # - image: cimg/base:current
-      - image: cimg/python:3.12.3
-      - image: cimg/ruby:3.3.1
+  install_python:
+    executor: python/default
     steps:
       - checkout
       - python/install-packages:
           pip-dependency-file: requirements.txt
           pkg-manager: pip
+      - "ls /tmp/cci_pycache"
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - /tmp/cci_pycache
+  test:
+    requires: install_python
+    executor: ruby/default
+    steps:
+      - checkout
       - ruby/install-deps
       - ruby/rspec-test:
           include: spec/**/*_spec.rb
@@ -24,7 +31,6 @@ jobs:
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  test-workflow: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  test-workflow:
     jobs:
       - test
