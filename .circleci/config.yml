@@ -14,11 +14,11 @@ jobs:
       - python/install-packages:
           pip-dependency-file: requirements.txt
           pkg-manager: pip
-      - run: "ls /tmp/cci_pycache"
+      - run: "ls .local/lib"
       - persist_to_workspace:
-          root: /tmp
+          root: .local
           paths:
-            - cci_pycache
+            - lib
   test:
     executor: ruby/default
     steps:
