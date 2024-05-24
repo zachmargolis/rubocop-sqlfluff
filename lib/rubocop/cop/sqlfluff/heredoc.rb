@@ -58,7 +58,7 @@ module RuboCop
           errors = sqlfluff.lint(
             sql: dedent(template_in(sql)).first,
             dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
-            config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
+            config_path: File.expand_path(cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)),
           )
 
           # rubocop:disable Style/ZeroLengthPredicate
@@ -76,7 +76,7 @@ module RuboCop
               sqlfluff.fix(
                 sql: template_in(dedented),
                 dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
-                config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE),
+                config_path: File.expand_path(cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)),
               ),
             ),
             to: indent_amount,
