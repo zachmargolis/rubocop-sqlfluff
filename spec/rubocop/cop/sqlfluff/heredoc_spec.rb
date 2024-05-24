@@ -15,7 +15,7 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
   it 'registers an offense SQL inside heredocs breaks sqlfluff rules' do
     expect_offense(<<~RUBY)
       ActiveRecord::Base.connection.execute(<<~SQL)
-                                            ^^^^^^ sqlfluff: lint failure
+                                            ^^^^^^ sqlfluff: lint failure (CP01) Line 1 Keywords must be upper case, (CP01) Line 2 Keywords must be upper case
       select 1
       from mytable
       SQL
@@ -32,7 +32,7 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
   it 'registers an offense SQL inside one-line heredocs that break sqlfluff rules' do
     expect_offense(<<~RUBY)
       ActiveRecord::Base.connection.execute(<<~SQL)
-                                            ^^^^^^ sqlfluff: lint failure
+                                            ^^^^^^ sqlfluff: lint failure (CP01) Line 1 Keywords must be upper case
       select 1
       SQL
     RUBY
@@ -77,7 +77,7 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     it 'corrects %{...} template in queries' do
       expect_offense(<<~RUBY)
         ActiveRecord::Base.connection.execute(<<~SQL)
-                                              ^^^^^^ sqlfluff: lint failure
+                                              ^^^^^^ sqlfluff: lint failure (CP01) Line 1 Keywords must be upper case, (CP01) Line 2 Keywords must be upper case, (CP01) Line 3 Keywords must be upper case, (CP01) Line 3 Keywords must be upper case, (CP01) Line 3 Keywords must be upper case
         select 1
         from %{table}
         where created_at between %{from} and %{to}
@@ -100,7 +100,7 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     it 'registers offenses in those heredoc tags' do
       expect_offense(<<~RUBY)
         ActiveRecord::Base.connection.execute(<<~QUERY)
-                                              ^^^^^^^^ sqlfluff: lint failure
+                                              ^^^^^^^^ sqlfluff: lint failure (CP01) Line 1 Keywords must be upper case
         select 1
         QUERY
       RUBY
@@ -144,7 +144,7 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     it 'uses the custom config file' do
       expect_offense(<<~RUBY)
         ActiveRecord::Base.connection.execute(<<~SQL)
-                                              ^^^^^^ sqlfluff: lint failure
+                                              ^^^^^^ sqlfluff: lint failure (CP01) Line 1 Keywords must be lower case, (LT04) Line 2 Found trailing comma ','. Expected only leading near line breaks, (CP01) Line 4 Keywords must be lower case
         SELECT
           foo,
           bar

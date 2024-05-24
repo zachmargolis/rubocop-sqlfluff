@@ -28,11 +28,11 @@ module RuboCop
 
           sql = node.location.heredoc_body.source
 
-          passed, _errors = sqlfluff_lint(sql)
+          passed, errors = sqlfluff_lint(sql)
 
           return if passed
 
-          add_offense(node, message: MSG) do |corrector|
+          add_offense(node, message: "#{MSG} #{format_errors(errors)}") do |corrector|
             corrector.replace(
               node.location.heredoc_body,
               sqlfluff_fix(sql)
@@ -95,6 +95,14 @@ module RuboCop
 
         def indent(str, to:)
           str.split("\n", -1).map { |line| (' ' * to) + line }.join("\n")
+        end
+
+        # @param errors [PyCall::List]
+        # @return [String]
+        def format_errors(errors)
+          errors.map do |error|
+            "(#{error['code']}) Line #{error['start_line_no']} #{error['description']}".chomp('.')
+          end.join(", ")
         end
       end
     end
