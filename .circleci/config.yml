@@ -17,7 +17,6 @@ jobs:
       - python/install-packages:
           pip-dependency-file: requirements.txt
           pkg-manager: pip
-          venv-path: env
       - ruby/install-deps
       - ruby/rspec-test:
           include: spec/**/*_spec.rb
