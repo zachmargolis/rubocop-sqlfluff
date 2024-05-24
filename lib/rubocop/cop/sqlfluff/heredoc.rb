@@ -61,7 +61,7 @@ module RuboCop
         # @return [Boolean, Array<Hash>]
         def sqlfluff_lint(sql)
           errors = sqlfluff.lint(
-            sql: template_in(sql),
+            sql: dedent(template_in(sql)).first,
             dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
             config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)
           )
@@ -74,13 +74,18 @@ module RuboCop
 
         # @return [String]
         def sqlfluff_fix(sql)
-          template_out(
-            sqlfluff.fix(
-              sql: template_in(sql),
-              dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
-              config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)
+          dedented, indent_amount = dedent(sql)
+
+          indent(
+            template_out(
+              sqlfluff.fix(
+                sql: template_in(dedented),
+                dialect: cop_config.fetch('Dialect', DEFAULT_DIALECT),
+                config_path: cop_config.fetch('ConfigFile', DEFAULT_CONFIG_FILE)
+              ),
             ),
-          )
+            to: indent_amount
+          ).gsub(/ +\Z/, '')
         end
 
         # Converts %{} to {}
@@ -91,6 +96,15 @@ module RuboCop
         # Converts {} back to %{}
         def template_out(sql)
           sql.gsub(/\{([^\}]+)\}/, '%{\1}')
+        end
+
+        # @return [String, Integer] (dedented string, number of spaces removed)
+        def dedent(str)
+          indent_amount = str.lines.map { |line| line.size - line.lstrip.size }.min
+          dedented = str.lines.map do |line|
+            line[indent_amount..]
+          end.join
+          [dedented, indent_amount]
         end
 
         def indent(str, to:)

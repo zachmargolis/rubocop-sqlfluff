@@ -7,6 +7,12 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
       'Sqlfluff/Heredoc' => {
         'StringIds' => string_ids,
         'Dialect' => 'ansi'
+      },
+      'Layout/HeredocIndentation' => {
+        'Enabled' => true,
+      },
+      'Layout/ClosingHeredocIndentation' => {
+        'Enabled' => true,
       }
     }
   end
@@ -16,15 +22,32 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     expect_offense(<<~RUBY)
       ActiveRecord::Base.connection.execute(<<~SQL)
                                             ^^^^^^ sqlfluff: lint failure (CP01) Line 1 Keywords must be upper case, (CP01) Line 2 Keywords must be upper case
-      select 1
-      from mytable
+        select 1
+        from mytable
       SQL
     RUBY
 
     expect_correction(<<~RUBY)
       ActiveRecord::Base.connection.execute(<<~SQL)
-      SELECT 1
-      FROM mytable
+        SELECT 1
+        FROM mytable
+      SQL
+    RUBY
+  end
+
+  it 'fixes mismatched indentation' do
+    expect_offense(<<~RUBY)
+      ActiveRecord::Base.connection.execute(<<~SQL)
+                                            ^^^^^^ sqlfluff: lint failure (CP01) Line 1 Keywords must be upper case, (LT02) Line 2 Line should not be indented, (CP01) Line 2 Keywords must be upper case
+        select 1
+          from mytable
+      SQL
+    RUBY
+
+    expect_correction(<<~RUBY)
+      ActiveRecord::Base.connection.execute(<<~SQL)
+        SELECT 1
+        FROM mytable
       SQL
     RUBY
   end
@@ -33,13 +56,13 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     expect_offense(<<~RUBY)
       ActiveRecord::Base.connection.execute(<<~SQL)
                                             ^^^^^^ sqlfluff: lint failure (CP01) Line 1 Keywords must be upper case
-      select 1
+        select 1
       SQL
     RUBY
 
     expect_correction(<<~RUBY)
       ActiveRecord::Base.connection.execute(<<~SQL)
-      SELECT 1
+        SELECT 1
       SQL
     RUBY
   end
@@ -67,9 +90,9 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     it 'handles %{...} template in queries' do
       expect_no_offenses(<<~RUBY)
         ActiveRecord::Base.connection.execute(<<~SQL)
-        SELECT 1
-        FROM %{table}
-        WHERE created_at BETWEEN %{from} AND %{to}
+          SELECT 1
+          FROM %{table}
+          WHERE created_at BETWEEN %{from} AND %{to}
         SQL
       RUBY
     end
@@ -78,17 +101,17 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
       expect_offense(<<~RUBY)
         ActiveRecord::Base.connection.execute(<<~SQL)
                                               ^^^^^^ sqlfluff: lint failure (CP01) Line 1 Keywords must be upper case, (CP01) Line 2 Keywords must be upper case, (CP01) Line 3 Keywords must be upper case, (CP01) Line 3 Keywords must be upper case, (CP01) Line 3 Keywords must be upper case
-        select 1
-        from %{table}
-        where created_at between %{from} and %{to}
+          select 1
+          from %{table}
+          where created_at between %{from} and %{to}
         SQL
       RUBY
 
       expect_correction(<<~RUBY)
         ActiveRecord::Base.connection.execute(<<~SQL)
-        SELECT 1
-        FROM %{table}
-        WHERE created_at BETWEEN %{from} AND %{to}
+          SELECT 1
+          FROM %{table}
+          WHERE created_at BETWEEN %{from} AND %{to}
         SQL
       RUBY
     end
@@ -158,31 +181,6 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
           foo
           , bar
         from mytable
-        SQL
-      RUBY
-    end
-  end
-
-  context 'with an indentation width' do
-    let(:config_values) do
-      super().merge(
-        'Layout/IndentationWidth' => {
-          'Width' => 4
-        }
-      )
-    end
-
-    pending 'takes indentation width into account for corrections' do
-      expect_offense(<<~RUBY)
-        ActiveRecord::Base.connection.execute(<<~SQL)
-                                              ^^^^^^ sqlfluff: lint failure
-          select 1
-        SQL
-      RUBY
-
-      expect_correction(<<~RUBY)
-        ActiveRecord::Base.connection.execute(<<~SQL)
-            SELECT 1
         SQL
       RUBY
     end
