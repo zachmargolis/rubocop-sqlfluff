@@ -28,6 +28,17 @@ module RuboCop
 
           sql = node.location.heredoc_body.source
 
+          if !sqlfluff
+            add_offense(
+              node,
+              message: 'sqlfluff: could not load',
+              severity: RuboCop::Cop::Severity.name_from_code(
+                cop_config.fetch('MissingPythonSeverity', :fatal),
+              ),
+            )
+            return
+          end
+
           passed, errors = sqlfluff_lint(sql)
 
           return if passed
@@ -41,16 +52,22 @@ module RuboCop
         end
 
         def sqlfluff
-          @sqlfluff ||= begin
-            sys = PyCall.import_module('sys')
-            env_path = ENV.fetch('VENV_PATH', cop_config.fetch('VirtualEnvPath', DEFAULT_VIRTUALENV))
+          return @sqlfluff if defined?(@sqlfluff)
 
-            Dir["#{env_path}/**/site-packages"].each do |packages_path|
+          sys = PyCall.import_module('sys')
+          env_path = ENV.fetch('VENV_PATH', cop_config.fetch('VirtualEnvPath', DEFAULT_VIRTUALENV))
+          packages = Dir["#{env_path}/**/site-packages"]
+
+          if packages.empty?
+            @sqlfluff = nil
+          else
+            packages.each do |packages_path|
               sys.path.append(packages_path)
             end
-
-            PyCall.import_module('sqlfluff')
+            @sqlfluff = PyCall.import_module('sqlfluff')
           end
+        rescue PyCall::PyError
+          @sqlfluff = nil
         end
 
         # @return [Boolean, Array<Hash>]

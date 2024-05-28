@@ -200,6 +200,41 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
     end
   end
 
+  context 'when python is missing' do
+    before  do
+      stub_const('ENV', {})
+      config_values['Sqlfluff/Heredoc']['VirtualEnvPath'] = '_does_not_exist'
+    end
+
+    it 'is a fatal error' do
+      expect_offense(<<~RUBY)
+        ActiveRecord::Base.connection.execute(<<~SQL)
+                                              ^^^^^^ sqlfluff: could not load
+        SELECT
+          foo,
+          bar
+        FROM mytable
+        SQL
+      RUBY
+    end
+
+    context 'when MissingPythonSeverity is warning' do
+      before { config_values['Sqlfluff/Heredoc']['MissingPythonSeverity'] = 'warning' }
+
+      it 'warns' do
+        expect_offense(<<~RUBY, severity: :warning)
+          ActiveRecord::Base.connection.execute(<<~SQL)
+                                                ^^^^^^ sqlfluff: could not load
+          SELECT
+            foo,
+            bar
+          FROM mytable
+          SQL
+        RUBY
+      end
+    end
+  end
+
   # Use inside an around block
   # @yieldparam ex
   def with_config_file(str)
