@@ -7,3 +7,4 @@ Sqlfluff/Heredoc:
   Dialect: postgres
   ConfigFile: '.sqlfluff'
   VirtualEnvPath: 'env'
+  MissingPythonSeverity: fatal
