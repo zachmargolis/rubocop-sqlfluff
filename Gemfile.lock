@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rubocop-sqlfluff (0.1.0)
+    rubocop-sqlfluff (0.1.1)
       pycall (>= 1.5.2)
       rubocop
 
