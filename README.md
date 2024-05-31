@@ -52,10 +52,10 @@ gem 'rubocop-sqlfluff', github: 'zachmargolis/rubocop-sqlfluff'
     pip install -r requirements.txt
     ```
 
-1. Run rubocop!
+1. Run rubocop! You can configure via `VENV_PATH` or `VirtualEnvPath` in the `rubocop.yml` config
 
     ```bash
-    bundle exec rubocop
+    VENV_PATH=env bundle exec rubocop
     ```
 
 ## Development
