@@ -29,13 +29,7 @@ module RuboCop
           sql = node.location.heredoc_body.source
 
           if !sqlfluff
-            add_offense(
-              node,
-              message: 'sqlfluff: could not load',
-              severity: RuboCop::Cop::Severity.name_from_code(
-                cop_config.fetch('MissingPythonSeverity', :fatal),
-              ),
-            )
+            add_missing_python_offense(node)
             return
           end
 
@@ -131,6 +125,16 @@ module RuboCop
           errors.map do |error|
             "(#{error['code']}) Line #{error['start_line_no']} #{error['description']}".chomp('.')
           end.join(', ')
+        end
+
+        def add_missing_python_offense(node)
+          add_offense(
+            node,
+            message: 'sqlfluff: could not load',
+            severity: RuboCop::Cop::Severity.name_from_code(
+              cop_config.fetch('MissingPythonSeverity', :fatal),
+            ),
+          )
         end
       end
     end

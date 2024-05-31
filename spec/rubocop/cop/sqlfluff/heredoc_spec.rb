@@ -201,7 +201,7 @@ RSpec.describe RuboCop::Cop::Sqlfluff::Heredoc, :config do
   end
 
   context 'when python is missing' do
-    before  do
+    before do
       stub_const('ENV', {})
       config_values['Sqlfluff/Heredoc']['VirtualEnvPath'] = '_does_not_exist'
     end

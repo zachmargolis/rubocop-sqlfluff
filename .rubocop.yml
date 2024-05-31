@@ -156,6 +156,8 @@ Style/MinMaxComparison:
   Enabled: true
 Style/MultilineInPatternThen:
   Enabled: true
+Style/NegatedIf:
+  Enabled: false
 Style/NegatedIfElseCondition:
   Enabled: true
 Style/NestedFileDirname:
